@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Button} from 'antd-mobile';
-
 import {HashRouter,Switch,Route} from 'react-router-dom';
 import Login from './components/login';
 import Main from './components/main';
-import Register from './components/register';
+import Register from './containers/register';
 import {Provider} from 'react-redux';
 import store from './redux/store';
+import './assets/less/index.less'
 
 ReactDOM.render(
   (

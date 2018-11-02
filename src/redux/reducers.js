@@ -1,23 +1,26 @@
 
-import {composeWithDevTools} from 'redux-devtools-extension';
+import {combineReducers} from 'redux';
 
-const xxxState = 123;
+import {SUCCESS,ERRMESSAGE} from './action-types';
+import getRedirectPath from '../utils'
 
-function xxx(preState=xxxState,action) {
+const initState ={
+  username:'',
+  type:'',
+  msg:'',
+  redirectTo:''
+};
+
+function users(preState = initState,action) {
   switch (action.type) {
+    case SUCCESS:
+      return {username: action.data.username,type: action.data.type,msg:'',redirectTo:getRedirectPath(action.data.type,action.data.header)};
+    case ERRMESSAGE:
+      return {...action.data};
     default :
       return preState;
   }
 }
-const yyyState = {};
-function yyy(preState=yyyState,action) {
-  switch (action.type) {
-    default :
-      return preState;
-  }
-}
-
-export default composeWithDevTools ({
-  xxx,
-  yyy
+export default combineReducers({
+  users
 })

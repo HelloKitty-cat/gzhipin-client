@@ -1,9 +1,17 @@
 import React, {Component} from 'react';
+import {Route,Switch} from 'react-router-dom';
+import LaobanInfo from '../laobanInfo';
+import DashenInfo from '../dashenInfo';
 
 class Main extends Component {
   render() {
     return (
-      <h2>Main</h2>
+      <div>
+        <Switch>
+          <Route path='/laobanInfo' component={LaobanInfo}/>
+          <Route path='/dashenInfo' component={DashenInfo}/>
+        </Switch>
+      </div>
     )
   }
 }

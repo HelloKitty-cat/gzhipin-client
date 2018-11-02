@@ -1,14 +1,15 @@
 import React, {Component} from 'react';
 import {NavBar,List, InputItem,Button,WingBlank, WhiteSpace,Radio} from 'antd-mobile';
-
 import Logo from '../logo/';
-
-import {reqRegister} from '../../api'
+import ProrTypes from 'prop-types';
+import {Redirect} from 'react-router-dom';
 
 const Item = List.Item;
-
 class Register extends Component {
 
+  static propTypes ={
+    register:ProrTypes.func.isRequired
+  };
   state = {
     username:'',
     password:'',
@@ -24,23 +25,12 @@ class Register extends Component {
   };
 
   //获取输入框的值
-  register =async () =>{
+  Register = async () =>{
     const {username,password,repassword,type} = this.state;
 
     console.log(username,password,repassword,type);
 
-    //发送ajax请求
-    if (password === repassword){
-      const data = await reqRegister({username,password,type});
-      console.log(data.data.code);
-      //当我的响应状态码code为0时,跳转到登录界面
-      if (data.data.code === 0){
-        this.props.history.replace('/login');
-      }
-    } else {
-      //两次密码不一致
-      alert('两次密码不一致');
-    }
+    this.props.register({username,password,repassword,type});
   };
 
   goLogin = () =>{
@@ -50,11 +40,18 @@ class Register extends Component {
 
   render() {
     const {type} = this.state;
+    const {msg,redirectTo} = this.props.users;
+
+    if (redirectTo){
+      return <Redirect to={redirectTo}/>
+    }
+
     return (
       <div>
         <NavBar>硅 谷 直 聘</NavBar>
         <Logo />
         <WingBlank>
+          {msg ? <p className='err-message'>{msg}</p> : ''}
           <form>
             <List>
               <WhiteSpace />
@@ -77,7 +74,7 @@ class Register extends Component {
                        onClick={() => this.handleChange('type','laoban')}
                        checked={type==='laoban'}>老板</Radio>
               </Item>
-              <Button type="primary" onClick={this.register}>注册</Button><WhiteSpace />
+              <Button type="primary" onClick={this.Register}>注册</Button><WhiteSpace />
               <Button onClick={this.goLogin}>已有账号</Button><WhiteSpace />
             </List>
           </form>
