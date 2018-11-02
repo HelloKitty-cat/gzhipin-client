@@ -10,3 +10,6 @@ export const reqLogin = data => ajax('/login',data,'POST');
 
 //注册请求
 export const reqRegister = data => ajax('/register',data,'POST');
+
+//更新请求
+export const reqUpdate = data => ajax('/update',data,'POST');

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Route,Switch} from 'react-router-dom';
-import LaobanInfo from '../laobanInfo';
+import LaobanInfo from '../../containers/laoban-info';
 import DashenInfo from '../dashenInfo';
 
 class Main extends Component {
