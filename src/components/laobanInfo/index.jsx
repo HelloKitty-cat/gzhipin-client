@@ -1,9 +1,14 @@
 import React, {Component} from 'react';
-
-import {NavBar,InputItem,List,TextareaItem,Button} from 'antd-mobile';
+import PropTypes from 'prop-types';
+import {NavBar,InputItem,TextareaItem,Button} from 'antd-mobile';
 import Headportrait from '../head-portrait'
 
 class LaobanInfo extends Component {
+
+  static propTypes = {
+    users:PropTypes.object.isRequired,
+    update:PropTypes.func.isRequired
+  }
 
   state = {
     header:'',  //头像
@@ -32,9 +37,7 @@ class LaobanInfo extends Component {
   };
 
   render() {
-
     const {msg} = this.props.users;
-
     return (
       <div>
         <NavBar>老板信息完善</NavBar>

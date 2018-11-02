@@ -51,14 +51,44 @@ export const register = data =>{  //用户提交的请求参数
   }
 };
 
-//更新
+//登录
+export const login = data =>{  //用户提交的请求参数
+
+  const {username,password} = data;
+  if (!username){
+    return authErrMsg({username,password,msg:'请输入用户名'})
+  }else if (!password){
+    return authErrMsg({username,password,msg:'请输入密码'})
+  }
+
+  return dispatch =>{
+    reqLogin(data) //用户提交的请求参数
+      .then(res =>{
+        const result = res.data;  //res.data   响应的数据
+        if (result.code === 0){
+          //更新成功
+          dispatch(authSucess(result.data));  //result.data 响应信息中的用户信息
+        }else {
+          //更新失败
+          dispatch(authErrMsg({msg:result.msg,username:data.username,type:data.type}));
+        }
+      })
+      .catch(err =>{
+        //方法出错
+        dispatch(authErrMsg({msg:'网络不稳定,请重新输入',username:data.username,type:data.type}));
+      })
+  }
+};
+
+
+//老板更新
 export const update = data =>{  //用户提交的请求参数
 
   const {header,info,post,salary,company} = data;
   if (!header){
     return updateErr({msg:'请选择头像'})
   }else if (!info){
-    return updateErr({msg:'请填写公司简介'})
+    return updateErr({msg:'请填写职位要求'})
   }else if (!post){
     return updateErr({msg:'请输入招聘职位'})
   } else if (!salary) {
@@ -85,3 +115,34 @@ export const update = data =>{  //用户提交的请求参数
       })
   }
 };
+
+export const updateDashen = data =>{  //用户提交的请求参数
+
+  const {header,info,post} = data;
+  if (!header){
+    return updateErr({msg:'请选择头像'})
+  }else if (!info){
+    return updateErr({msg:'请填写个人介绍'})
+  }else if (!post){
+    return updateErr({msg:'请输入求职岗位'})
+  }
+  return dispatch =>{
+    reqUpdate(data) //用户提交的请求参数
+      .then(res =>{
+        const result = res.data;  //res.data   响应的数据
+        if (result.code === 0){
+          //更新成功
+          dispatch(updateSuccess(result.data));  //result.data 响应信息中的用户信息
+        }else {
+          //更新失败
+          dispatch(updateErr({msg:result.msg}));
+        }
+      })
+      .catch(err =>{
+        //方法出错
+        dispatch(updateErr({msg:'网络不稳定,请重新输入'}));
+      })
+  }
+};
+
+

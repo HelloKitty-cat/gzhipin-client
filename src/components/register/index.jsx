@@ -8,7 +8,8 @@ const Item = List.Item;
 class Register extends Component {
 
   static propTypes ={
-    register:ProrTypes.func.isRequired
+    register:ProrTypes.func.isRequired,
+    users:ProrTypes.object.isRequired
   };
   state = {
     username:'',
@@ -41,11 +42,9 @@ class Register extends Component {
   render() {
     const {type} = this.state;
     const {msg,redirectTo} = this.props.users;
-
     if (redirectTo){
       return <Redirect to={redirectTo}/>
     }
-
     return (
       <div>
         <NavBar>硅 谷 直 聘</NavBar>

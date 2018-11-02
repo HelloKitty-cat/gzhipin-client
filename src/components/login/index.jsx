@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {Button, InputItem, List, NavBar, WhiteSpace, WingBlank} from "antd-mobile";
 import Logo from "../logo";
-
-import md5 from 'blueimp-md5';
-
-import {reqLogin} from '../../api'
+import PropTypes from 'prop-types';
 
 class Login extends Component {
-  
+  static propTypes = {
+    history:PropTypes.object.isRequired
+  };
+
   state = {
     username :'',
     password:''
@@ -27,24 +27,18 @@ class Login extends Component {
     //获取状态
     const {username,password} = this.state;
 
-    //判断用户输入是否合法
-    if (!username || !password)  return;
-
     //发送请求
-    const data = await reqLogin({username,password:md5(password)});
-    console.log(data);
-    //当我密码和用户名都正确时，跳转页面
-    if (data.data.code === 0){
-      this.props.history.replace('/main');
-    }
+    this.props.login({username,password});
   };
 
   render() {
+    const {msg} = this.props.users;
     return (
       <div>
         <NavBar>硅 谷 直 聘</NavBar>
         <Logo />
         <WingBlank>
+          {msg ? <p className='err-message'>{msg}</p> : ''}
           <form>
             <List>
               <WhiteSpace />
