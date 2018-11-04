@@ -1,9 +1,9 @@
 
 //action creators工厂函数创建 action对象
 
-import {reqLogin,reqRegister,reqUpdate} from '../api';
+import {reqLogin, reqRegister, reqUpdate, reqGetUserInfo, reqGetUserList } from '../api';
 
-import {SUCCESS,ERRMESSAGE,UPDATESUCCESS,UPDATEERR} from './action-types';
+import {SUCCESS,ERRMESSAGE,UPDATESUCCESS,UPDATEERR, UPDATE_lIST_ERR, UPDATE_lIST_SUCCESS} from './action-types';
 
 
 //成功的同步actions对象
@@ -17,6 +17,15 @@ export const updateSuccess = user => ({type:UPDATESUCCESS,data:user});
 
 //更新失败的同步函数
 export const updateErr = msg => ({type:UPDATEERR,data:msg});
+
+//更新用户列表成功 的同步函数
+
+export const updateUserList = userlist => ({type:UPDATE_lIST_SUCCESS,data:userlist})
+
+//更新用户列表失败的同步函数
+export const updateListErr = msg => ({type:UPDATE_lIST_ERR,data:msg});
+
+
 
 //注册验证及更新的方法
 export const register = data =>{  //用户提交的请求参数
@@ -80,21 +89,24 @@ export const login = data =>{  //用户提交的请求参数
   }
 };
 
-
 //老板更新
 export const update = data =>{  //用户提交的请求参数
 
-  const {header,info,post,salary,company} = data;
+  const {header,info,post,salary,company,type} = data;
   if (!header){
     return updateErr({msg:'请选择头像'})
   }else if (!info){
-    return updateErr({msg:'请填写职位要求'})
+    return updateErr(type === 'laoban' ?  {msg:'请填写职位要求'} : {msg:'请填写求职岗位'})
   }else if (!post){
-    return updateErr({msg:'请输入招聘职位'})
-  } else if (!salary) {
-    return updateErr({msg:'请填写资薪范围'})
-  }else if(!company){
-    return updateErr({msg:'请填写公司名称'})
+    return updateErr(type === 'laoban' ?  {msg:'请输入招聘职位'} : {msg:'请填写求职岗位'})
+  }
+
+  if (type === 'laoban'){
+   if (!salary) {
+      return updateErr({msg:'请填写资薪范围'})
+    }else if(!company){
+      return updateErr({msg:'请填写公司名称'})
+    }
   }
 
   return dispatch =>{
@@ -116,25 +128,19 @@ export const update = data =>{  //用户提交的请求参数
   }
 };
 
-export const updateDashen = data =>{  //用户提交的请求参数
 
-  const {header,info,post} = data;
-  if (!header){
-    return updateErr({msg:'请选择头像'})
-  }else if (!info){
-    return updateErr({msg:'请填写个人介绍'})
-  }else if (!post){
-    return updateErr({msg:'请输入求职岗位'})
-  }
+//获取用户信息的异步action
+export const getUserInfo = () =>{
+
   return dispatch =>{
-    reqUpdate(data) //用户提交的请求参数
+    reqGetUserInfo() //用户提交的请求参数
       .then(res =>{
         const result = res.data;  //res.data   响应的数据
         if (result.code === 0){
-          //更新成功
+          //请求成功
           dispatch(updateSuccess(result.data));  //result.data 响应信息中的用户信息
         }else {
-          //更新失败
+          //请求失败 （服务器内部出现问题）
           dispatch(updateErr({msg:result.msg}));
         }
       })
@@ -146,3 +152,24 @@ export const updateDashen = data =>{  //用户提交的请求参数
 };
 
 
+
+//获取用户列表数据的异步action
+export const getUserList = type =>{
+  return dispatch =>{
+    reqGetUserList(type)
+      .then(res=>{
+      const result = res.data;
+      if (result.code === 0){
+        //更新用户列表成功
+        dispatch(updateUserList(result.data))
+      } else {
+        //更新用户列表失败
+        dispatch(updateUserList({msg:result.data}))
+      }
+      })
+      .catch(err =>{
+        // //更新用户列表成功（方法出错）
+        dispatch(updateUserList({msg:'网络不稳定,请重新输入'}))
+      })
+  }
+};

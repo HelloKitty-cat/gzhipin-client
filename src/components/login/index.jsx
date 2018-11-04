@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Button, InputItem, List, NavBar, WhiteSpace, WingBlank} from "antd-mobile";
 import Logo from "../logo";
+import {Redirect} from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 class Login extends Component {
@@ -24,15 +25,16 @@ class Login extends Component {
   };
   //点击登录
   Tologin = async () =>{
-    //获取状态
-    const {username,password} = this.state;
-
     //发送请求
-    this.props.login({username,password});
+    this.props.login(this.state);
+
   };
 
   render() {
-    const {msg} = this.props.users;
+    const {msg,redirectTo} = this.props.users;
+    if (redirectTo) {
+      return <Redirect to={redirectTo}/>
+    }
     return (
       <div>
         <NavBar>硅 谷 直 聘</NavBar>

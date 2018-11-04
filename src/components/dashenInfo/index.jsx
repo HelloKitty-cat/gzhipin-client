@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, InputItem, NavBar,TextareaItem} from "antd-mobile";
+import {Redirect} from 'react-router-dom';
 import Headportrait from "../head-portrait";
 import ProrTypes from 'prop-types';
 
@@ -7,7 +8,7 @@ class DashenInfo extends Component {
 
   static propTypes = {
     users:ProrTypes.object.isRequired,
-    updateDashen:ProrTypes.func.isRequired
+    update:ProrTypes.func.isRequired
   };
 
   state = {
@@ -31,11 +32,14 @@ class DashenInfo extends Component {
 
   //点击保存，保存输入到数据库中
   saveUsersData = () =>{
-    this.props.updateDashen(this.state);
+    this.props.update(this.state);
   };
 
   render() {
-    const {msg} = this.props.users;
+    const {msg,header} = this.props.users;
+    if (header){
+      return <Redirect to='/dashen'/>
+    }
     return (
       <div>
         <NavBar>大神信息完善</NavBar>

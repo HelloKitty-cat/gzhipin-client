@@ -2,13 +2,14 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {NavBar,InputItem,TextareaItem,Button} from 'antd-mobile';
 import Headportrait from '../head-portrait'
+import {Redirect} from "react-router-dom";
 
 class LaobanInfo extends Component {
 
   static propTypes = {
     users:PropTypes.object.isRequired,
     update:PropTypes.func.isRequired
-  }
+  };
 
   state = {
     header:'',  //头像
@@ -33,11 +34,14 @@ class LaobanInfo extends Component {
 
   //点击保存，保存输入到数据库中
   saveUsersData = () =>{
-      this.props.update(this.state);
+      this.props.update({...this.state,type:'laoban'});
   };
 
   render() {
-    const {msg} = this.props.users;
+    const {msg,header} = this.props.users;
+    if (header){
+      return <Redirect to='/dashen'/>
+    }
     return (
       <div>
         <NavBar>老板信息完善</NavBar>

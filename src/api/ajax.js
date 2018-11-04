@@ -16,7 +16,6 @@ export default function ajax(url,data,type='GET') {
       querystring += key+'='+value+'&'
     });
     querystring = querystring.substring(0,querystring.length-1);   //这里不可以用-1
-    console.log(querystring);
   }
   if (type.toUpperCase() === 'GET') {
     //用户发送的是get请求

@@ -31,7 +31,7 @@ class Register extends Component {
 
     console.log(username,password,repassword,type);
 
-    this.props.register({username,password,repassword,type});
+    this.props.register({username,password,repassword,type,route:'register'});
   };
 
   goLogin = () =>{
