@@ -1,10 +1,20 @@
 
 //action creators工厂函数创建 action对象
 
-import {reqLogin, reqRegister, reqUpdate, reqGetUserInfo, reqGetUserList } from '../api';
+import {reqLogin, reqRegister, reqUpdate, reqGetUserInfo, reqGetUserList, reqSendChatList} from '../api';
 
-import {SUCCESS,ERRMESSAGE,UPDATESUCCESS,UPDATEERR, UPDATE_lIST_ERR, UPDATE_lIST_SUCCESS} from './action-types';
-
+import {
+  SUCCESS,
+  ERRMESSAGE,
+  UPDATESUCCESS,
+  UPDATEERR,
+  UPDATE_lIST_ERR,
+  UPDATE_lIST_SUCCESS,
+  UPDATE_CHATlIST_ERR,
+  UPDATE_CHATlIST_SUCCESS
+} from './action-types';
+// 引入客户端io
+import io from 'socket.io-client';
 
 //成功的同步actions对象
 export const authSucess = user => ({type:SUCCESS,data:user});
@@ -20,12 +30,16 @@ export const updateErr = msg => ({type:UPDATEERR,data:msg});
 
 //更新用户列表成功 的同步函数
 
-export const updateUserList = userlist => ({type:UPDATE_lIST_SUCCESS,data:userlist})
+export const updateUserList = userlist => ({type:UPDATE_lIST_SUCCESS,data:userlist});
 
 //更新用户列表失败的同步函数
 export const updateListErr = msg => ({type:UPDATE_lIST_ERR,data:msg});
 
+//更新用户聊天列表成功的同步函数
+export const updateUserChatList = chatMag => ({type:UPDATE_CHATlIST_SUCCESS,data:chatMag});
 
+//更新用户聊天列表失败的同步函数
+export const updateChatListErr = msg => ({type:UPDATE_CHATlIST_ERR,data:msg});
 
 //注册验证及更新的方法
 export const register = data =>{  //用户提交的请求参数
@@ -151,8 +165,6 @@ export const getUserInfo = () =>{
   }
 };
 
-
-
 //获取用户列表数据的异步action
 export const getUserList = type =>{
   return dispatch =>{
@@ -164,12 +176,50 @@ export const getUserList = type =>{
         dispatch(updateUserList(result.data))
       } else {
         //更新用户列表失败
-        dispatch(updateUserList({msg:result.data}))
+        dispatch(updateListErr({msg:result.data}))
       }
       })
       .catch(err =>{
         // //更新用户列表成功（方法出错）
-        dispatch(updateUserList({msg:'网络不稳定,请重新输入'}))
+        dispatch(updateListErr({msg:'网络不稳定,请重新输入'}))
+      })
+  }
+};
+
+
+
+// 连接服务器, 得到代表连接的socket对象
+const socket = io('ws://localhost:5000');
+// 绑定'receiveMessage'的监听, 来接收服务器发送的消息
+socket.on('receiveMsg', function (data) {
+  console.log('浏览器端接受到服务器的消息:', data)
+});
+
+export const sendMessage = ({from,to,content}) =>{
+  return dispatch =>{
+// 向服务器发送消息
+    socket.emit('sendMsg', {from,to,content});
+    console.log('浏览器端向服务器发送消息:', {from,to,content});
+  }
+};
+
+export const sendChatList =()=>{
+  return dispatch =>{
+    //发送ajax请求
+    reqSendChatList ()
+      .then(res =>{
+        const result = res.data;
+        if (result.code === 0){
+          //请求成功
+          dispatch(updateUserChatList(result.data));
+        } else {
+          //请求失败
+          dispatch(updateChatListErr({msg:result.msg}));
+        }
+      })
+      .catch(err=>{
+        //请求失败
+        dispatch(updateChatListErr({msg:'网络不稳定,请重新输入'}));
       })
   }
 };

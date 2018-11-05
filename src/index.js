@@ -6,7 +6,8 @@ import Main from './containers/main';
 import Register from './containers/register';
 import {Provider} from 'react-redux';
 import store from './redux/store';
-import './assets/less/index.less'
+import './assets/less/index.less';
+
 
 ReactDOM.render(
   (

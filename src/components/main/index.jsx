@@ -8,6 +8,7 @@ import Laoban from '../../containers/laoban';
 import Dashen from '../../containers/dashen';
 import Message from "../../containers/message";
 import Personal from "../../containers/personal";
+import Chat from '../../containers/chat'
 import getRedirectPath from '../../utils'
 
 import NavFooter from '../navfooter'
@@ -95,6 +96,7 @@ class Main extends Component {
           <Route path='/dashen' component={Dashen}/>
           <Route path='/message' component={Message}/>
           <Route path='/personal' component={Personal}/>
+          <Route path='/chat/:id' component={Chat}/>
         </Switch>
         {current ? <NavFooter navList={this.navList}/> : ''}
       </div>

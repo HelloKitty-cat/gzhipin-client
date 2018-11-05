@@ -27,7 +27,6 @@ class Login extends Component {
   Tologin = async () =>{
     //发送请求
     this.props.login(this.state);
-
   };
 
   render() {

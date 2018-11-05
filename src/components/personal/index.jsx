@@ -4,11 +4,18 @@
 import React from 'react'
 import {Result, List, WhiteSpace, Button,Modal} from 'antd-mobile'
 import Cookie from 'js-cookie';
+import PropTyeps from 'prop-types';
+
 
 const Item = List.Item;
 const Brief = Item.Brief;
 
-export default class Personal extends React.Component {
+export default class Personal extends React.Component {2
+
+  static propTypes ={
+    updateErr:PropTyeps.func.isRequired,
+    history:PropTyeps.object.isRequired
+  };
 
   logout = () => {
     Modal.alert('退出登录', '你确认退出登录?', [
@@ -20,12 +27,14 @@ export default class Personal extends React.Component {
         text: '确认', onPress: () => {
           //清除cookie
           Cookie.remove('userid');
+          //
+          this.props.updateErr({});
           //在重定向到登录
           this.props.history.replace('/login')
         }
       },
     ])
-  }
+  };
 
   render() {
     const {users} = this.props;

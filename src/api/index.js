@@ -19,3 +19,6 @@ export const reqGetUserInfo = () => ajax('/user');
 
 //获取用户列表的
 export const reqGetUserList = type => ajax('/userlist',{type});
+
+//获取用户聊天列表的
+export const reqSendChatList = () => ajax('/msglist');
