@@ -45,7 +45,7 @@ class Message extends Component {
           lastChatobj[chat_id].unReadCount++;
         }
       }
-    })
+    });
     // 将lastChatObj里面值组成一个数组
     let chatMsgs = Object.values(lastChatobj);
     // 按照时间顺序，从大到小排序
@@ -55,11 +55,11 @@ class Message extends Component {
     return chatMsgs;
   };
 
-
   componentDidMount (){
     //发送ajax请求,请求聊天列表
     this.props.sendChatList();
   }
+
 
   render() {
     /*
@@ -70,25 +70,24 @@ class Message extends Component {
         2. 将lastChatObj里面值组成一个数组, 按照时间顺序，从大到小排序
      */
     const {userChatList} = this.props;
-    const userid = Cookies.get('userid');
-    console.log(userChatList);
+    let userid = Cookies.get('userid');
 
     const chatMsgs = this.getChatMsgs(userChatList, userid);
-    console.log(chatMsgs);
+
     return (
       <List>
         {
           chatMsgs.map((chatMsg,index) =>{
             const {from,to,content,unReadCount} = chatMsg;
-            const id = userid===from ? to : from;
+            let id = userid ===from ? to : from;
             const {header,username} = userChatList.users[id];
-            console.log(header);
             return (
               <Item
                 extra={<Badge text={unReadCount}/>}
-                thumb={ header ? require(`../../assets/avatars/${header}.png`) : ''}
+                thumb={require(`../../assets/avatars/${header}.png`)}
                 arrow='horizontal'
                 key={index}
+                onClick={()=> this.props.history.push(`/chat/${id}`)}
               >
                 {content}
                 <Brief>{username}</Brief>

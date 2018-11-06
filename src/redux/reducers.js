@@ -9,7 +9,8 @@ import {
   UPDATE_lIST_ERR,
   UPDATE_lIST_SUCCESS,
   UPDATE_CHATlIST_SUCCESS,
-  UPDATE_CHATlIST_ERR
+  UPDATE_CHATlIST_ERR,
+  UPDATE_CHAT_MESSAGES
 } from './action-types';
 import getRedirectPath from '../utils'
 
@@ -51,7 +52,8 @@ function userList(preState = initUserListState,action) {
 }
 
 const initUserChatListState = {
-  chatMsgs:[]
+  chatMsgs:[],
+  users:{}
 };
 //获取用户聊天列表的
 function userChatList(preState = initUserChatListState,action) {
@@ -60,6 +62,11 @@ function userChatList(preState = initUserChatListState,action) {
       return action.data;
     case UPDATE_CHATlIST_ERR :
       return action.data;
+    case UPDATE_CHAT_MESSAGES:
+      return {
+        chatMsgs: [...preState.chatMsgs,action.data],
+        users:preState.users
+      };
     default:
       return preState
   }

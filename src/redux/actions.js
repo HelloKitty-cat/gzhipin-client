@@ -11,7 +11,8 @@ import {
   UPDATE_lIST_ERR,
   UPDATE_lIST_SUCCESS,
   UPDATE_CHATlIST_ERR,
-  UPDATE_CHATlIST_SUCCESS
+  UPDATE_CHATlIST_SUCCESS,
+  UPDATE_CHAT_MESSAGES
 } from './action-types';
 // 引入客户端io
 import io from 'socket.io-client';
@@ -36,10 +37,14 @@ export const updateUserList = userlist => ({type:UPDATE_lIST_SUCCESS,data:userli
 export const updateListErr = msg => ({type:UPDATE_lIST_ERR,data:msg});
 
 //更新用户聊天列表成功的同步函数
-export const updateUserChatList = chatMag => ({type:UPDATE_CHATlIST_SUCCESS,data:chatMag});
+export const updateUserChatList = chatMsgs => ({type:UPDATE_CHATlIST_SUCCESS,data:chatMsgs});
 
 //更新用户聊天列表失败的同步函数
 export const updateChatListErr = msg => ({type:UPDATE_CHATlIST_ERR,data:msg});
+
+//更新用户聊天信息
+export const updateChatMessages = chatMsgs => ({type:UPDATE_CHAT_MESSAGES,data:chatMsgs});
+
 
 //注册验证及更新的方法
 export const register = data =>{  //用户提交的请求参数
@@ -195,16 +200,30 @@ socket.on('receiveMsg', function (data) {
   console.log('浏览器端接受到服务器的消息:', data)
 });
 
-export const sendMessage = ({from,to,content}) =>{
+
+
+export const sendMessage = ({content, from, to}) =>{
   return dispatch =>{
 // 向服务器发送消息
-    socket.emit('sendMsg', {from,to,content});
-    console.log('浏览器端向服务器发送消息:', {from,to,content});
+    socket.emit('sendMsg', {content, from, to});
+    console.log('浏览器端向服务器发送消息:');
   }
 };
 
+
+//更新用户聊天列表
 export const sendChatList =()=>{
   return dispatch =>{
+
+    if (!socket.isFirts){
+      socket.isFirts = true;
+      //一旦服务器发送消息，就可以更新redux中的状态数据
+      socket.on('receiveMsg', function (data) {
+        dispatch(updateChatMessages(data));
+        console.log('浏览器端接受到服务器的消息:', data)
+      });
+    }
+
     //发送ajax请求
     reqSendChatList ()
       .then(res =>{

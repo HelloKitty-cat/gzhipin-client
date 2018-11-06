@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import {Route,Switch,Redirect} from 'react-router-dom';
 import Cookie from 'js-cookie';
+import {NavBar,Icon} from 'antd-mobile';
 import PropTypes from 'prop-types';
 import LaobanInfo from '../../containers/laoban-info';
 import DashenInfo from '../../containers/dashen-info';
@@ -10,10 +11,9 @@ import Message from "../../containers/message";
 import Personal from "../../containers/personal";
 import Chat from '../../containers/chat'
 import getRedirectPath from '../../utils'
-
 import NavFooter from '../navfooter'
 
-import {NavBar} from 'antd-mobile';
+
 
 
 class Main extends Component {
@@ -65,7 +65,7 @@ class Main extends Component {
     const {users} = this.props;
     if (!users._id){
       this.props.getUserInfo();
-      return <div>Loading....</div>
+      return  <Icon type='loading' size='large' style={{position:'absolute',top:0,left:0,bottom:0,right:0,margin:'auto',width:'50px',height:'50px'}}></Icon>
     }
     //3.本地有cookie，直接使用
 
@@ -87,17 +87,19 @@ class Main extends Component {
     const current = this.navList.find(nav => pathname===nav.path);
 
     return (
-      <div>
-        {current ? <NavBar>{current.title}</NavBar> : ''}
-        <Switch>
-          <Route path='/laobanInfo' component={LaobanInfo}/>
-          <Route path='/laoban' component={Laoban}/>
-          <Route path='/dashenInfo' component={DashenInfo}/>
-          <Route path='/dashen' component={Dashen}/>
-          <Route path='/message' component={Message}/>
-          <Route path='/personal' component={Personal}/>
-          <Route path='/chat/:id' component={Chat}/>
-        </Switch>
+      <div >
+        {current ? <NavBar className='navBar-header'>{current.title}</NavBar> : ''}
+        <div style={{ paddingTop: '50px',paddingBottom:'60px'}}>
+          <Switch>
+            <Route path='/laobanInfo' component={LaobanInfo}/>
+            <Route path='/laoban' component={Laoban}/>
+            <Route path='/dashenInfo' component={DashenInfo}/>
+            <Route path='/dashen' component={Dashen}/>
+            <Route path='/message' component={Message}/>
+            <Route path='/personal' component={Personal}/>
+            <Route path='/chat/:id' component={Chat} />
+          </Switch>
+        </div>
         {current ? <NavFooter navList={this.navList}/> : ''}
       </div>
     )
