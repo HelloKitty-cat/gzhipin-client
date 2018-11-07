@@ -6,7 +6,6 @@ import {Result, List, WhiteSpace, Button,Modal} from 'antd-mobile'
 import Cookie from 'js-cookie';
 import PropTyeps from 'prop-types';
 
-
 const Item = List.Item;
 const Brief = Item.Brief;
 
@@ -14,7 +13,8 @@ export default class Personal extends React.Component {2
 
   static propTypes ={
     updateErr:PropTyeps.func.isRequired,
-    history:PropTyeps.object.isRequired
+    history:PropTyeps.object.isRequired,
+    sendChatList:PropTyeps.func.isRequired
   };
 
   logout = () => {
@@ -35,6 +35,10 @@ export default class Personal extends React.Component {2
       },
     ])
   };
+
+  componentDidMount (){
+    this.props.sendChatList();
+  }
 
   render() {
     const {users} = this.props;

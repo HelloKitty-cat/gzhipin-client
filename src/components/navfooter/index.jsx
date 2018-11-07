@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
 import {TabBar} from 'antd-mobile';
-import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 const Item = TabBar.Item;
 
 class NavFooter extends Component {
   static propTypes = {
-    navList:PropTypes.array.isRequired
+    navList:PropTypes.array.isRequired,
+    unReadCount:PropTypes.number.isRequired
   };
   render() {
     const {pathname} = this.props.location;
@@ -18,6 +18,7 @@ class NavFooter extends Component {
       <TabBar>
         {navList.map((item,index) => <Item
         key={index}
+        badge={item.path === '/message' ? this.props.unReadCount : 0}
         title={item.title}
         icon={{uri: require(`./images/${item.icon}.png`)}}  //icon	默认展示图片
         selectedIcon={{uri:require(`./images/${item.icon}-selected.png`)}}  //selectedIcon	选中后的展示图片
@@ -30,4 +31,4 @@ class NavFooter extends Component {
   }
 }
 //将当前组件包装成路由组件返回，就有三个属性
-export default withRouter(NavFooter);
+export default NavFooter;

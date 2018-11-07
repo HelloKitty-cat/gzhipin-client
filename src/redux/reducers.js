@@ -1,5 +1,6 @@
 
 import {combineReducers} from 'redux';
+import Cookies from 'js-cookie';
 
 import {
   SUCCESS,
@@ -10,7 +11,9 @@ import {
   UPDATE_lIST_SUCCESS,
   UPDATE_CHATlIST_SUCCESS,
   UPDATE_CHATlIST_ERR,
-  UPDATE_CHAT_MESSAGES
+  UPDATE_CHAT_MESSAGES,
+  UPDATE_UNREADCOUNT_MESSAGES,
+  UPDATE_UNREADCOUNT_ERR
 } from './action-types';
 import getRedirectPath from '../utils'
 
@@ -53,13 +56,20 @@ function userList(preState = initUserListState,action) {
 
 const initUserChatListState = {
   chatMsgs:[],
-  users:{}
+  users:{},
+  unReadCount:0
 };
 //获取用户聊天列表的
 function userChatList(preState = initUserChatListState,action) {
   switch (action.type) {
     case UPDATE_CHATlIST_SUCCESS:
-      return action.data;
+      var userid = Cookies.get('userid');
+      return {
+        ...action.data,
+        unReadCount: action.data.chatMsgs.reduce((prev,curr) =>{
+          return prev + (!curr.read && curr.to === userid ? 1 : 0)
+        },0)
+      };
     case UPDATE_CHATlIST_ERR :
       return action.data;
     case UPDATE_CHAT_MESSAGES:
@@ -67,6 +77,21 @@ function userChatList(preState = initUserChatListState,action) {
         chatMsgs: [...preState.chatMsgs,action.data],
         users:preState.users
       };
+    case UPDATE_UNREADCOUNT_MESSAGES:
+      var userids = Cookies.get('userid');
+      return {
+        chatMsgs:preState.chatMsgs.map(chatMsg =>{
+          if (chatMsg.from === action.data.from && chatMsg.to === userids && !chatMsg.read) {
+            return {...chatMsg,read:true}
+          }else {
+            return chatMsg
+          }
+        }),
+        users:preState.users,
+        unReadCount:preState.unReadCount-action.data.count
+      };
+    case UPDATE_UNREADCOUNT_ERR:
+      return action.data;
     default:
       return preState
   }

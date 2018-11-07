@@ -11,7 +11,7 @@ import Message from "../../containers/message";
 import Personal from "../../containers/personal";
 import Chat from '../../containers/chat'
 import getRedirectPath from '../../utils'
-import NavFooter from '../navfooter'
+import NavFooter from '../../containers/navfooter'
 
 
 
@@ -63,7 +63,7 @@ class Main extends Component {
     }
     //2.本地有cookie,redux中没有状态(y用户登录了,但是用户刷新了页面)，根据cookie发送ajax请求当前的状态数据，保存在redux中
     const {users} = this.props;
-    if (!users._id){
+    if (!users._id && !users.msg){
       this.props.getUserInfo();
       return  <Icon type='loading' size='large' style={{position:'absolute',top:0,left:0,bottom:0,right:0,margin:'auto',width:'50px',height:'50px'}}></Icon>
     }
@@ -84,7 +84,7 @@ class Main extends Component {
     }
 
     //找到路由路径对于的nav对象
-    const current = this.navList.find(nav => pathname===nav.path);
+    const current = navList.find(nav => pathname===nav.path);
 
     return (
       <div >

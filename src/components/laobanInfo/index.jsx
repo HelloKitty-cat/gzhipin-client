@@ -43,7 +43,7 @@ class LaobanInfo extends Component {
       return <Redirect to='/dashen'/>
     }
     return (
-      <div>
+      <div style={{marginTop:'-50px',marginBottom:'-60px'}}>
         <NavBar>老板信息完善</NavBar>
         <Headportrait changeHeader={this.changeHeader}/>
         {msg ? <p className='err-message'>{msg}</p> : ''}

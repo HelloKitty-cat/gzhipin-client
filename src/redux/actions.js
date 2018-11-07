@@ -1,7 +1,7 @@
 
 //action creators工厂函数创建 action对象
 
-import {reqLogin, reqRegister, reqUpdate, reqGetUserInfo, reqGetUserList, reqSendChatList} from '../api';
+import {reqLogin, reqRegister, reqUpdate, reqGetUserInfo, reqGetUserList, reqSendChatList, reqUpdateunReadCount} from '../api';
 
 import {
   SUCCESS,
@@ -12,7 +12,9 @@ import {
   UPDATE_lIST_SUCCESS,
   UPDATE_CHATlIST_ERR,
   UPDATE_CHATlIST_SUCCESS,
-  UPDATE_CHAT_MESSAGES
+  UPDATE_CHAT_MESSAGES,
+  UPDATE_UNREADCOUNT_ERR,
+  UPDATE_UNREADCOUNT_MESSAGES
 } from './action-types';
 // 引入客户端io
 import io from 'socket.io-client';
@@ -44,6 +46,13 @@ export const updateChatListErr = msg => ({type:UPDATE_CHATlIST_ERR,data:msg});
 
 //更新用户聊天信息
 export const updateChatMessages = chatMsgs => ({type:UPDATE_CHAT_MESSAGES,data:chatMsgs});
+
+
+//更新用户聊天已读消息失败的同步函数
+export const updateUnReadCountErr = msg => ({type:UPDATE_UNREADCOUNT_ERR,data:msg});
+
+//更新用户聊天信息
+export const updateUnReadCountSuccess = from => ({type:UPDATE_UNREADCOUNT_MESSAGES,data:from});
 
 
 //注册验证及更新的方法
@@ -94,10 +103,11 @@ export const login = data =>{  //用户提交的请求参数
       .then(res =>{
         const result = res.data;  //res.data   响应的数据
         if (result.code === 0){
-          //更新成功
+          //登陆成功
+          updataUsersChatListFun(dispatch);
           dispatch(authSucess(result.data));  //result.data 响应信息中的用户信息
         }else {
-          //更新失败
+          //登陆失败
           dispatch(authErrMsg({msg:result.msg,username:data.username,type:data.type}));
         }
       })
@@ -195,17 +205,12 @@ export const getUserList = type =>{
 
 // 连接服务器, 得到代表连接的socket对象
 const socket = io('ws://localhost:5000');
-// 绑定'receiveMessage'的监听, 来接收服务器发送的消息
-socket.on('receiveMsg', function (data) {
-  console.log('浏览器端接受到服务器的消息:', data)
-});
-
-
 
 export const sendMessage = ({content, from, to}) =>{
   return dispatch =>{
 // 向服务器发送消息
     socket.emit('sendMsg', {content, from, to});
+    updataUsersChatListFun(dispatch);
     console.log('浏览器端向服务器发送消息:');
   }
 };
@@ -214,31 +219,56 @@ export const sendMessage = ({content, from, to}) =>{
 //更新用户聊天列表
 export const sendChatList =()=>{
   return dispatch =>{
+    updataUsersChatListFun(dispatch);
+  }
+};
 
-    if (!socket.isFirts){
-      socket.isFirts = true;
-      //一旦服务器发送消息，就可以更新redux中的状态数据
-      socket.on('receiveMsg', function (data) {
-        dispatch(updateChatMessages(data));
-        console.log('浏览器端接受到服务器的消息:', data)
-      });
-    }
+function updataUsersChatListFun(dispatch) {
+  if (!socket.isFirst){
+    socket.isFirst = true;
+    //一旦服务器发送消息，就可以更新redux中的状态数据
+    socket.on('receiveMsg', function (data) {
+      dispatch(updateChatMessages(data));
+      console.log('浏览器端接受到服务器的消息:', data)
+    });
+  }
 
-    //发送ajax请求
-    reqSendChatList ()
+  //发送ajax请求
+  reqSendChatList ()
+    .then(res =>{
+      const result = res.data;
+      if (result.code === 0){
+        //请求成功
+        dispatch(updateUserChatList(result.data));
+      } else {
+        //请求失败
+        dispatch(updateChatListErr({msg:result.msg}));
+      }
+    })
+    .catch(err=>{
+      //请求失败
+      dispatch(updateChatListErr({msg:'网络不稳定,请重新输入'}));
+    })
+}
+
+
+//更新已读消息的异步action
+export const updateUnReadCount = from =>{
+  return dispatch =>{
+    reqUpdateunReadCount(from)
       .then(res =>{
         const result = res.data;
         if (result.code === 0){
-          //请求成功
-          dispatch(updateUserChatList(result.data));
+          //更新成功
+          dispatch(updateUnReadCountSuccess({from,count:result.count}))
         } else {
-          //请求失败
-          dispatch(updateChatListErr({msg:result.msg}));
+          //更新失败
+          dispatch(updateUnReadCountErr({msg:result.msg}))
         }
       })
-      .catch(err=>{
-        //请求失败
-        dispatch(updateChatListErr({msg:'网络不稳定,请重新输入'}));
+      .catch(err =>{
+        //方法出错,更新失败
+        dispatch(updateUnReadCountErr({msg:'网络不稳定,请重新输入'}))
       })
   }
 };

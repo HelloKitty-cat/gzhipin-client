@@ -3,7 +3,6 @@
  */
 import React from 'react'
 import {Card, WingBlank, WhiteSpace} from 'antd-mobile'
-import {withRouter} from 'react-router-dom';
 import PropTypes from 'prop-types';
 const Header = Card.Header;
 const Body = Card.Body;
@@ -11,8 +10,12 @@ const Body = Card.Body;
 class UserList extends React.Component {
 
  static propTypes = {
-   item:PropTypes.object.isRequired
+   item:PropTypes.object.isRequired,
+   sendChatList:PropTypes.func.isRequired
  };
+ componentDidMount (){
+   this.props.sendChatList();
+ }
 
   render() {
     const {header,username,post,company,salary,info,_id} = this.props.item;
@@ -38,4 +41,4 @@ class UserList extends React.Component {
   }
 }
 
-export default withRouter(UserList)
+export default UserList;
